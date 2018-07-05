@@ -1,0 +1,39 @@
+/*Regular*/
+@font-face {
+    font-family:'Stag Book';
+    src: url('../fonts/Stag-Book.eot');
+	src: url('../fonts/Stag-Book.eot?#iefix') format('embedded-opentype'),
+		url('../fonts/Stag-Book.woff2') format('woff2'),
+		url('../fonts/Stag-Book.woff') format('woff'),
+		url('../fonts/Stag-Book.otf') format('opentype');
+}
+/*Italic*/
+@font-face {
+    font-family:'Stag Book Italic';
+    src: url('../fonts/Stag-BookItalic.eot');
+	src: url('../fonts/Stag-BookItalic.eot?#iefix') format('embedded-opentype'),
+		url('../fonts/Stag-BookItalic.woff2') format('woff2'),
+		url('../fonts/Stag-BookItalic.woff') format('woff'),
+		url('../fonts/Stag-BookItalic.otf') format('opentype');
+    font-style: italic;
+}
+/*Medium*/
+@font-face {
+    font-family:'Stag Medium';
+    src: url('../fonts/Stag-Medium.eot');
+	src: url('../fonts/Stag-Medium.eot?#iefix') format('embedded-opentype'),
+		url('../fonts/Stag-Medium.woff2') format('woff2'),
+		url('../fonts/Stag-Medium.woff') format('woff'),
+		url('../fonts/Stag-Medium.otf') format('opentype');
+    font-style: normal;
+}
+/*Semibold*/
+@font-face {
+    font-family:'Stag Semibold';
+    src: url('../fonts/Stag-Semibold.eot');
+	src: url('../fonts/Stag-Semibold.eot?#iefix') format('embedded-opentype'),
+		url('../fonts/Stag-Semibold.woff2') format('woff2'),
+		url('../fonts/Stag-Semibold.woff') format('woff'),
+		url('../fonts/Stag-Semibold.otf') format('opentype');
+    font-style: normal;
+}

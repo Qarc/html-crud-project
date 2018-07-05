@@ -1,0 +1,33 @@
+@import 'base/variables'
+@import 'base/reset'
+@import 'base/mixins'
+@import 'base/fonts'
+@import 'layout/grid'
+@import 'layout/header'
+@import 'pages/post'
+
+body
+	background: #f2f2f2
+	font-family: $stag-book-R
+	font-size: 14px
+	color: $text-color
+	position: relative
+	width: 100%
+html, body
+	height: 100%
+.wrapper
+	min-height: 100%
+	height: auto !important
+	height: 100%
+main
+	display: block
+	padding-bottom: $footer-height
+footer
+	margin-top: -$footer-height
+	box-sizing: border-box
+a
+	+transition(0.3s ease-in-out)
+input[type="submit"], button
+	+transition(0.3s ease-in-out)
+	outline: none
+

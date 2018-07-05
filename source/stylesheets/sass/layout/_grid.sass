@@ -1,0 +1,78 @@
+.container
+    width: $container-width
+    max-width: $container-max-width
+    min-width: $container-min-width
+    margin: 0 auto
+.container-fluid
+    width: $container-fluid-width
+    min-width: $container-fluid-min-width
+    max-width: $container-fluid-max-width
+    margin: 0 auto
+    box-sizing: border-box
+.container-full-width
+    margin: 0 auto
+    box-sizing: border-box
+    width: 100%
+    float: none
+    clear: both
+%clearfix:after
+    display: block
+    clear: both
+    content: ''
+
+$gutter: 1.05%
+$grid-spacing: $gutter + $gutter
+$float: left
+
+.row 
+    @extend %clearfix
+
+[class^="col-"]
+    float: $float
+    margin: 0 $gutter
+    -webkit-box-sizing: border-box
+    -moz-box-sizing: border-box
+    box-sizing: border-box
+
+.col-1
+    width: (1/12*100%) - $grid-spacing
+.col-2
+    width: (2/12*100%) - $grid-spacing
+.col-3
+    width: (3/12*100%) - $grid-spacing
+.col-4
+    width: (4/12*100%) - $grid-spacing
+.col-5
+    width: (5/12*100%) - $grid-spacing
+.col-6
+    width: (6/12*100%) - $grid-spacing
+.col-7
+    width: (7/12*100%) - $grid-spacing
+.col-8
+    width: (8/12*100%) - $grid-spacing
+.col-9
+    width: (9/12*100%) - $grid-spacing
+.col-10
+    width: (10/12*100%) - $grid-spacing
+.col-11
+    width: (11/12*100%) - $grid-spacing
+.col-12
+    width: (12/12*100%) - $grid-spacing
+
+.l-offset-1
+    margin-left: (1/12*100%) + $gutter
+.l-offset-2
+    margin-left: (2/12*100%) + $gutter
+.l-offset-3
+    margin-left: (3/12*100%) + $gutter
+.r-offset-1
+    margin-right: (1/12*100%) + $gutter
+.r-offset-2
+    margin-right: (2/12*100%) + $gutter
+.r-offset-3
+    margin-right: (3/12*100%) + $gutter
+
+.col_centered
+    margin: 0 auto
+    float: none
+    clear: both

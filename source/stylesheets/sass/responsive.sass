@@ -1,0 +1,86 @@
+@media only screen and (max-width: 800px)
+	.post
+		.meta
+			display: flex
+			justify-content: space-between
+
+			&__item
+				margin-right: 3px
+
+		.comment 
+			&__date
+				padding-left: 0
+
+@media only screen and (max-width: 650px)
+	.post
+		&__body
+			padding: 0 20px
+
+@media only screen and (max-width: 550px)
+	.post
+		.meta
+			display: block
+			border: 0
+			line-height: 25px
+
+			&__item
+				white-space: nowrap
+
+				&_comments-count
+					margin-left: 3px
+
+					i
+						padding-right: 4px
+
+@media only screen and (max-width: 450px)
+	.post
+		&__body
+			padding: 0 15px
+
+		&__content 
+			font-size: 16px
+			line-height: 22px
+			letter-spacing: 0.6px
+
+			img, img.alignleft
+				float: none
+				margin: 0
+
+			p
+				padding-bottom: 16px
+
+		.comment
+			&__text
+				font-size: 14px
+				line-height: 22px
+				letter-spacing: 0.6px
+
+			&__form
+				form
+					textarea
+						font-size: 14px
+						line-height: 22px
+						letter-spacing: 0.6px
+
+			&_children
+				.avatar
+					width: 48px
+					height: 48px
+					min-width: 48px
+			
+			&__reply-to
+				padding-left: 0
+				font-size: 14px
+				line-height: 22px
+				letter-spacing: 0.6px
+		
+		.avatar
+			margin-right: 10px
+			width: 64px
+			height: 64px
+			min-width: 64px
+
+		.meta
+			font-size: 14px
+			line-height: 22px
+			letter-spacing: 0.6px	
