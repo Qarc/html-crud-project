@@ -1,5 +1,6 @@
 var EMAIL = "nikolay.hnatovskyi@gmail.com";
 var commentsCount = 0;
+var isEditModeEnabled = false;
 
 function getCommentsList(count, offset) {
     var url  = "http://frontend-test.pingbull.com/pages/" + EMAIL + "/comments";
@@ -57,7 +58,6 @@ function newComment(content, parent) {
     } else if(content === undefined) {
         console.log("Please, enter the message!");
     }
-
 
     var xhr = new XMLHttpRequest();
     xhr.open("POST", url, true);
@@ -138,7 +138,7 @@ function renderCommentList(result) {
                     ${comment.content}
                 </div>
                 <div class="comment__actions">
-                    <button>
+                    <button onclick="toggleCommentForm(event); isEditMode();">
                         <i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit
                     </button>
                     <button onclick="deleteCurrentComment(event, ${comment.id})">
@@ -157,7 +157,7 @@ function renderCommentList(result) {
                     </div>
                     <form action="">
                         <textarea placeholder="Your Message" name="" id="" cols="30" rows="6"></textarea>
-                        <input class="btn" type="button" value="Send" onclick="sendComment(event, ${comment.id}, 'answer')">
+                        <input class="btn" type="button" value="Send" onclick="formButtonAction(event, ${comment.id}, 'answer')">
                     </form>
                 </div>
                 <div class="comment__answers">`;
@@ -197,6 +197,7 @@ function renderCommentList(result) {
 }
 
 function toggleCommentForm(event) {
+    isEditModeEnabled = false;
     var target = $(event.target);
     var form = target.parents(".comment__body").find(".comment__form");
 
@@ -212,7 +213,6 @@ function sendComment(event, parentID, mode) {
     var textarea = target.parent("form").find("textarea");
     var message = textarea.val();
     // var answersContainer = target.parents(".comment__body").find(".comment__answers");
-    
 
     switch (mode) {
         case 'answer':
@@ -223,6 +223,7 @@ function sendComment(event, parentID, mode) {
             textarea.val("");
             break;
     }
+    isEditModeEnabled = false;
 }
 
 function deleteCurrentComment(event, id) {
@@ -243,6 +244,24 @@ function loadMoreComments(event) {
     }
 }
 
+function editCurrentComment(event, id) {
+    var target = $(event.target);
+    var textarea = target.parent("form").find("textarea");
+    var message = textarea.val();
+    editComment(id, message);
+}
+
+function isEditMode() {
+    isEditModeEnabled = true;
+}
+
+function formButtonAction(event, id, mode) {
+    if(!isEditModeEnabled) {
+        sendComment(event, id, mode);
+    } else {
+        editCurrentComment(event, id);
+    }
+}
 
 
 

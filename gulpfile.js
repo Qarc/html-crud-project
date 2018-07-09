@@ -19,7 +19,7 @@ var site = 'public',
 gulp.task('connect', function() {
   connect.server({
     root: site,
-    livereload: true
+		livereload: true
   });
 });
 
@@ -47,7 +47,7 @@ gulp.task('cssmin', function() {
 
 gulp.task('js', function() {
   return gulp.src(inputJs)
-    // .pipe(uglify())
+    .pipe(uglify())
     .pipe(rename({suffix: '.min'}))
     .pipe(gulp.dest(outputMinJs))
     .pipe(connect.reload());
