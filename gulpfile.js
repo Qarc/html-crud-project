@@ -6,7 +6,8 @@ var	gulp = require('gulp'),
 	sass = require('gulp-sass'),
 	connect = require('gulp-connect'),
 	livereload = require('gulp-livereload'),
-	uglify = require('gulp-uglify');
+	uglify = require('gulp-uglify'),
+	babel = require('gulp-babel');
 
 var site = 'public',
 	inputCss = 'source/stylesheets/sass/*.{sass,scss}',
@@ -19,7 +20,8 @@ var site = 'public',
 gulp.task('connect', function() {
   connect.server({
     root: site,
-		livereload: true
+		livereload: true,
+		port: 12345
   });
 });
 
@@ -47,7 +49,10 @@ gulp.task('cssmin', function() {
 
 gulp.task('js', function() {
   return gulp.src(inputJs)
-    .pipe(uglify())
+		// .pipe(uglify())
+		.pipe(babel({
+			presets: ['env']
+		}))
     .pipe(rename({suffix: '.min'}))
     .pipe(gulp.dest(outputMinJs))
     .pipe(connect.reload());

@@ -17,8 +17,11 @@
   },
   "homepage": "https://github.com/Qarc/html-crud-project#readme",
   "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-preset-env": "^1.7.0",
     "gulp": "^3.9.1",
     "gulp-autoprefixer": "^5.0.0",
+    "gulp-babel": "^7.0.1",
     "gulp-connect": "^5.5.0",
     "gulp-livereload": "^3.8.1",
     "gulp-minify-css": "^1.2.4",
