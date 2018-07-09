@@ -390,7 +390,6 @@ textarea {
      -moz-border-radius: 6px;
           border-radius: 6px;
   cursor: pointer;
-  outline: none;
 }
 
 .post .comment__form_opened {
@@ -489,7 +488,6 @@ textarea {
   padding: 0;
   margin-right: 6px;
   cursor: pointer;
-  outline: none;
 }
 
 .post .comment__actions button i {
@@ -558,7 +556,6 @@ textarea {
   -o-transition: 0.3s;
   -moz-transition: 0.3s;
   transition: 0.3s;
-  outline: none;
 }
 
 .post .load-more__btn::before {
@@ -625,7 +622,7 @@ a {
   transition: 0.3s ease-in-out;
 }
 
-input[type="submit"], button {
+input[type="submit"], input[type="button"], button {
   -moz-transition: 0.3s ease-in-out;
   -o-transition: 0.3s ease-in-out;
   -webkit-transition: 0.3s ease-in-out;

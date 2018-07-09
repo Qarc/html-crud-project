@@ -157,7 +157,7 @@ function renderCommentList(result) {
                     </div>
                     <form action="">
                         <textarea placeholder="Your Message" name="" id="" cols="30" rows="6"></textarea>
-                        <input class="btn" type="button" value="Send" onclick="sendComment(event, ${comment.id})">
+                        <input class="btn" type="button" value="Send" onclick="sendComment(event, ${comment.id}, 'answer')">
                     </form>
                 </div>
                 <div class="comment__answers">`;
@@ -207,11 +207,22 @@ function toggleCommentForm(event) {
     }
 }
 
-function sendComment(event, parentID) {
+function sendComment(event, parentID, mode) {
     var target = $(event.target);
-    var message = target.parent("form").find("textarea").val();
-    var answersContainer = target.parents(".comment__body").find(".comment__answers");
-    newComment(message, parentID);
+    var textarea = target.parent("form").find("textarea");
+    var message = textarea.val();
+    // var answersContainer = target.parents(".comment__body").find(".comment__answers");
+    
+
+    switch (mode) {
+        case 'answer':
+            newComment(message, parentID);
+            break;
+        case 'comment':
+            newComment(message);
+            textarea.val("");
+            break;
+    }
 }
 
 function deleteCurrentComment(event, id) {
