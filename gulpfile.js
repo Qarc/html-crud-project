@@ -49,10 +49,10 @@ gulp.task('cssmin', function() {
 
 gulp.task('js', function() {
   return gulp.src(inputJs)
-		// .pipe(uglify())
 		.pipe(babel({
 			presets: ['env']
 		}))
+		.pipe(uglify())
     .pipe(rename({suffix: '.min'}))
     .pipe(gulp.dest(outputMinJs))
     .pipe(connect.reload());

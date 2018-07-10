@@ -23,7 +23,6 @@ function getCommentsList(count, offset) {
         var result = JSON.parse(xhr.responseText);
         if (xhr.readyState == 4 && xhr.status == "200") {
             renderCommentList(result);
-            console.log(result);
         } else {
             console.error(result);
         }
@@ -205,11 +204,13 @@ function toggleCommentForm(event) {
     isEditModeEnabled = false;
     var target = $(event.target);
     var form = target.parents(".comment__body").find(".comment__form");
+    var textarea = target.parents(".comment__body").find("textarea");
 
     if(!form.hasClass("comment__form_opened")) {
         form.addClass("comment__form_opened");
     } else {
         form.removeClass("comment__form_opened");
+        textarea.val("");
     }
 }
 
@@ -245,13 +246,27 @@ function deleteCurrentComment(event, id) {
 }
 
 function loadMoreComments(event) {
-    var target = $(event.target);
-
-    getCommentsList(5, commentsCount);
-    
-    if(commentsCount % 5 > 0) {
-        target.parent(".load-more").css("visibility", "hidden");
+    var numberOfCommentsToShow = 5;
+    if(isFirefox()) {
+        numberOfCommentsToShow = 0;
     }
+    var target = $(event.target);
+    getCommentsList(numberOfCommentsToShow, commentsCount);
+
+    var url  = "http://frontend-test.pingbull.com/pages/" + EMAIL + "/comments?count=99999";
+    var xhr  = new XMLHttpRequest()
+    xhr.open('GET', url, false)
+    xhr.onload = function () {
+        var result = JSON.parse(xhr.responseText);
+        if (xhr.readyState == 4 && xhr.status == "200") {
+            if(commentsCount >= result.length - numberOfCommentsToShow) {
+                target.parent(".load-more").css("visibility", "hidden");
+            }
+        } else {
+            console.error(result);
+        }
+    }
+    xhr.send(null);
 }
 
 function editCurrentComment(event, id) {
@@ -382,10 +397,6 @@ function showNewComment(event) {
         }
     }
     xhr.send(null);
-    
-
-
-
 }
 
 function setCommentsNumber() {
@@ -395,7 +406,7 @@ function setCommentsNumber() {
     xhr.onload = function () {
         var result = JSON.parse(xhr.responseText);
         if (xhr.readyState == 4 && xhr.status == "200") {
-            $(".comments-number").append(result.length);
+            $(".comments-number").text(result.length);
         } else {
             console.error(result);
         }
@@ -428,6 +439,14 @@ function getCurrentTime() {
     var now = new Date(Date.now());
     var formatted = now.getHours() - hours + ":" + (now.getMinutes() + minutes);
     return formatted;
+}
+
+function isFirefox() {
+    if (navigator.userAgent.search(/Firefox/) > 0) {
+        return true;
+    };
+
+    return false;
 }
 
 // Polyfill
