@@ -143,7 +143,7 @@ function renderCommentList(result) {
                     ${comment.content}
                 </div>
                 <div class="comment__actions">
-                    <button onclick="toggleCommentForm(event); isEditMode();">
+                    <button onclick="toggleCommentForm(event); isEditMode(event);">
                         <i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit
                     </button>
                     <button onclick="deleteCurrentComment(event, ${comment.id})">
@@ -227,8 +227,10 @@ function sendComment(event, parentID, mode) {
             break;
         case 'comment':
             newComment(message);
-            showNewComment(event);
-            textarea.val("");
+            setTimeout(() => {
+                showNewComment(event);
+                textarea.val("");
+            }, 500);
             break;
     }
     isEditModeEnabled = false;
@@ -259,8 +261,12 @@ function editCurrentComment(event, id) {
     editComment(id, message);
 }
 
-function isEditMode() {
+function isEditMode(event) {
     isEditModeEnabled = true;
+    var target = $(event.target);
+    var textarea = target.parents(".comment__body").find("textarea");
+    var text = target.parents(".comment__body").find(".comment__text").first().text();
+    textarea.val(text.trim());
 }
 
 function formButtonAction(event, id, mode) {
@@ -268,6 +274,11 @@ function formButtonAction(event, id, mode) {
         sendComment(event, id, mode);
     } else {
         editCurrentComment(event, id);
+        var target = $(event.target);
+        var textElem = target.parents(".comment__body").find(".comment__text").first();
+        var textarea = target.parents(".comment__body").find("textarea");
+        textElem.text(textarea.val());
+        textarea.val("");
     }
 }
 
@@ -306,52 +317,97 @@ function showNewAnswer(event) {
 }
 
 function showNewComment(event) {
+    var html = "";
     var target = $(event.target);
     var textarea = target.parent("form").find("textarea");
     var message = textarea.val();
 
-    var html = `
-        <div class="comment">
-            <div class="avatar">
-                <img src="${currentUser.avatar}" alt="avatar">
-            </div>
-            <div class="comment__body">
-                <div class="comment__meta">
-                    <span class="comment__author">
-                        ${currentUser.name}
-                    </span>
-                    <span class="comment__date">
-                        <i class="fa fa-clock-o" aria-hidden="true"></i>
-                        <span>${getCurrentDate()}</span> at 
-                        <span>${getCurrentTime()}</span>
-                    </span>
+    var url  = "http://frontend-test.pingbull.com/pages/" + EMAIL + "/comments?count=1";
+    var xhr  = new XMLHttpRequest()
+    xhr.open('GET', url, true)
+    xhr.onload = function () {
+        var result = JSON.parse(xhr.responseText);
+        if (xhr.readyState == 4 && xhr.status == "200") {
+            console.log(result);
+            html = `
+                <div class="comment">
+                    <div class="avatar">
+                        <img src="${currentUser.avatar}" alt="avatar">
+                    </div>
+                    <div class="comment__body">
+                        <div class="comment__meta">
+                            <span class="comment__author">
+                                ${currentUser.name}
+                            </span>
+                            <span class="comment__date">
+                                <i class="fa fa-clock-o" aria-hidden="true"></i>
+                                <span>${getCurrentDate()}</span> at 
+                                <span>${getCurrentTime()}</span>
+                            </span>
+                        </div>
+                        <div class="comment__text">
+                            ${message}
+                        </div>
+                        <div class="comment__actions">
+                            <button onclick="toggleCommentForm(event); isEditMode(event);">
+                                <i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit
+                            </button>
+                            <button onclick="deleteCurrentComment(event, ${result[0].id})">
+                                <i class="fa fa-times" aria-hidden="true"></i> Delete
+                            </button>
+                            <button onclick="toggleCommentForm(event)">
+                                <i class="fa fa-reply" aria-hidden="true"></i>Reply
+                            </button>
+                        </div>
+                        <div class="comment__form">
+                            <div class="comment__form-header">
+                                <span class="reply-to"><i class="fa fa-reply" aria-hidden="true"></i> Kurt Thompson</span>
+                                <button class="cancel" onclick="toggleCommentForm(event)">
+                                    <i class="fa fa-times" aria-hidden="true"></i> Cancel
+                                </button>
+                            </div>
+                            <form action="">
+                                <textarea placeholder="Your Message" name="" id="" cols="30" rows="6"></textarea>
+                                <input class="btn" type="button" value="Send" onclick="formButtonAction(event, ${result[0].id}, 'answer')">
+                            </form>
+                        </div>
+                        <div class="comment__answers"></div>
+                    </div>
                 </div>
-                <div class="comment__text">
-                    ${message}
-                </div>
-                <div class="comment__actions">
-                    <button onclick="toggleCommentForm(event); isEditMode();">
-                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit
-                    </button>
-                    <button onclick="deleteCurrentComment(event, 4237)">
-                        <i class="fa fa-times" aria-hidden="true"></i> Delete
-                    </button>
-                    <button onclick="toggleCommentForm(event)">
-                        <i class="fa fa-reply" aria-hidden="true"></i>Reply
-                    </button>
-                </div>
-            </div>
-        </div>
-    `;
+            `;
+        
+            $("#comment-list").prepend(html);
+        } else {
+            console.error(result);
+        }
+    }
+    xhr.send(null);
+    
 
-    $("#comment-list").prepend(html);
+
+
 }
+
+function setCommentsNumber() {
+    var url  = "http://frontend-test.pingbull.com/pages/" + EMAIL + "/comments?count=99999";
+    var xhr  = new XMLHttpRequest()
+    xhr.open('GET', url, true)
+    xhr.onload = function () {
+        var result = JSON.parse(xhr.responseText);
+        if (xhr.readyState == 4 && xhr.status == "200") {
+            $(".comments-number").append(result.length);
+        } else {
+            console.error(result);
+        }
+    }
+    xhr.send(null);
+}
+setCommentsNumber();
 
 //helpers
 function getCurrentDate() {
     var now = new Date();
     var formatedDate = formatDate(now);
-    console.log(formatedDate);
     return formatedDate;
 }
 
