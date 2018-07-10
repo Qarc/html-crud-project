@@ -1,6 +1,10 @@
 var EMAIL = "nikolay.hnatovskyi@gmail.com";
 var commentsCount = 0;
 var isEditModeEnabled = false;
+var currentUser = {
+    name: "Kurt Thompson",
+    avatar: "http://api.randomuser.me/portraits/thumb/men/69.jpg"
+}
 
 function getCommentsList(count, offset) {
     var url  = "http://frontend-test.pingbull.com/pages/" + EMAIL + "/comments";
@@ -109,6 +113,7 @@ function deleteComment(id) {
 
 
 /* Rendering */
+$(".comment_leave").find("img").attr("src", currentUser.avatar);
 
 function renderCommentList(result) {
     var html = "";
@@ -212,14 +217,17 @@ function sendComment(event, parentID, mode) {
     var target = $(event.target);
     var textarea = target.parent("form").find("textarea");
     var message = textarea.val();
-    // var answersContainer = target.parents(".comment__body").find(".comment__answers");
 
     switch (mode) {
         case 'answer':
             newComment(message, parentID);
+            showNewAnswer(event);
+            toggleCommentForm(event);
+            textarea.val("");
             break;
         case 'comment':
             newComment(message);
+            showNewComment(event);
             textarea.val("");
             break;
     }
@@ -261,6 +269,109 @@ function formButtonAction(event, id, mode) {
     } else {
         editCurrentComment(event, id);
     }
+}
+
+function showNewAnswer(event) {
+    var target = $(event.target);
+    var textarea = target.parent("form").find("textarea");
+    var message = textarea.val();
+    var answersContainer = target.parents(".comment__body").find(".comment__answers");
+    var authorName = target.parents(".comment:not(.comment_children)").find(".comment__meta .comment__author").first().text();
+
+    var html = `<div class="comment comment_children">
+        <div class="avatar">
+            <img src="${currentUser.avatar}" alt="avatar">
+        </div>
+        <div class="comment__body">
+            <div class="comment__meta">
+                <span class="comment__author">
+                    ${currentUser.name}
+                </span>
+                <span class="comment__reply-to">
+                    <i class="fa fa-reply" aria-hidden="true"></i> ${authorName}
+                </span>
+                <span class="comment__date">
+                    <i class="fa fa-clock-o" aria-hidden="true"></i>
+                    <span>${getCurrentDate()}</span> at 
+                    <span>${getCurrentTime()}</span>
+                </span>
+            </div>
+            <div class="comment__text">
+                ${message}
+            </div>
+        </div>
+    </div>`;
+
+    answersContainer.append(html);
+}
+
+function showNewComment(event) {
+    var target = $(event.target);
+    var textarea = target.parent("form").find("textarea");
+    var message = textarea.val();
+
+    var html = `
+        <div class="comment">
+            <div class="avatar">
+                <img src="${currentUser.avatar}" alt="avatar">
+            </div>
+            <div class="comment__body">
+                <div class="comment__meta">
+                    <span class="comment__author">
+                        ${currentUser.name}
+                    </span>
+                    <span class="comment__date">
+                        <i class="fa fa-clock-o" aria-hidden="true"></i>
+                        <span>${getCurrentDate()}</span> at 
+                        <span>${getCurrentTime()}</span>
+                    </span>
+                </div>
+                <div class="comment__text">
+                    ${message}
+                </div>
+                <div class="comment__actions">
+                    <button onclick="toggleCommentForm(event); isEditMode();">
+                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit
+                    </button>
+                    <button onclick="deleteCurrentComment(event, 4237)">
+                        <i class="fa fa-times" aria-hidden="true"></i> Delete
+                    </button>
+                    <button onclick="toggleCommentForm(event)">
+                        <i class="fa fa-reply" aria-hidden="true"></i>Reply
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    $("#comment-list").prepend(html);
+}
+
+//helpers
+function getCurrentDate() {
+    var now = new Date();
+    var formatedDate = formatDate(now);
+    console.log(formatedDate);
+    return formatedDate;
+}
+
+function formatDate(date) {
+    var dd = date.getDate();
+    if (dd < 10) dd = '0' + dd;
+
+    var mm = date.getMonth() + 1;
+    if (mm < 10) mm = '0' + mm;
+
+    var yy = date.getFullYear();
+
+    return yy + '-' + mm + '-' + dd;
+}
+
+function getCurrentTime() {
+    var hours = 3, minutes = 9;
+    var now = new Date(Date.now());
+    var formatted = now.getHours() - hours + ":" + (now.getMinutes() + minutes);
+    return formatted;
 }
 
 // Polyfill
@@ -340,4 +451,4 @@ if (!Array.from) {
         return A;
       };
     }());
-  }
+}
