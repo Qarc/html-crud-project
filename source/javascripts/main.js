@@ -7,75 +7,103 @@ var currentUser = {
 }
 
 function getCommentsList(count, offset) {
-    var url  = "http://frontend-test.pingbull.com/pages/" + EMAIL + "/comments";
+    return new Promise(function(resolve, reject) {
+        var url  = "http://frontend-test.pingbull.com/pages/" + EMAIL + "/comments";
 
-    if(count !== undefined && offset !== undefined) {
-        url += "?count=" + count + "&offset=" + offset;
-    } else if (count !== undefined) {
-        url += "?count=" + count;
-    } else if(offset !== undefined) {
-        url += "?offset=" + offset;
-    }
-
-    var xhr  = new XMLHttpRequest()
-    xhr.open('GET', url, true)
-    xhr.onload = function () {
-        var result = JSON.parse(xhr.responseText);
-        if (xhr.readyState == 4 && xhr.status == "200") {
-            renderCommentList(result);
-        } else {
-            console.error(result);
+        if (count !== undefined && offset !== undefined) {
+            url += "?count=" + count + "&offset=" + offset;
+        } else if (count !== undefined) {
+            url += "?count=" + count;
+        } else if (offset !== undefined) {
+            url += "?offset=" + offset;
         }
-    }
-    xhr.send(null);
+
+        var xhr  = new XMLHttpRequest()
+        xhr.open('GET', url, true)
+        xhr.onload = function () {
+            var result = JSON.parse(xhr.responseText);
+            if (xhr.readyState == 4 && xhr.status == "200") {
+                resolve(result);
+            } else {
+                var error = new Error(this.statusText);
+                error.code = this.status;
+                reject(error);
+            }
+        }
+
+        xhr.onerror = function() {
+            reject(new Error("Network Error"));
+        };
+        
+        xhr.send(null);
+    });
 }
 
-getCommentsList();
-// getCommentsList();
-// getCommentsList(null, 3);
-// getCommentsList(2);
+getCommentsList().then(
+    result => renderCommentList(result),
+    error => console.log(error)
+);
 
 function getSingleComment(id) {
-    var url  = "http://frontend-test.pingbull.com/pages/" + EMAIL + "/comments/";
-    var xhr  = new XMLHttpRequest()
-    xhr.open('GET', url + id, true)
-    xhr.onload = function () {
-        var result = JSON.parse(xhr.responseText);
-        if (xhr.readyState == 4 && xhr.status == "200") {
-            console.log(result);
-        } else {
-            console.error(result);
+    return new Promise(function(resolve, reject) {
+        var url  = "http://frontend-test.pingbull.com/pages/" + EMAIL + "/comments/";
+        var xhr  = new XMLHttpRequest()
+        xhr.open('GET', url + id, true)
+        xhr.onload = function () {
+            var result = JSON.parse(xhr.responseText);
+            if (xhr.readyState == 4 && xhr.status == "200") {
+                console.log(result);
+                resolve(this.response);
+            } else {
+                console.error(result);
+                var error = new Error(this.statusText);
+                error.code = this.status;
+                reject(error);
+            }
         }
-    }
-    xhr.send(null);
+
+        xhr.onerror = function() {
+            reject(new Error("Network Error"));
+        };
+
+        xhr.send(null);
+    });
 }
 //getSingleComment(4141)
 
 function newComment(content, parent) {
-    var url = "http://frontend-test.pingbull.com/pages/" + EMAIL + "/comments";
+    return new Promise(function(resolve, reject) {
+        var url = "http://frontend-test.pingbull.com/pages/" + EMAIL + "/comments";
 
-    if(content !== undefined && parent !== undefined) {
-        url += "?content=" + content + "&parent=" + parent;
-    } else if (content !== undefined) {
-        url += "?content=" + content;
-    } else if(content === undefined) {
-        console.log("Please, enter the message!");
-    }
-
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", url, true);
-    xhr.setRequestHeader('Content-type','application/json; charset=utf-8');
-    xhr.onload = function () {
-        var result = JSON.parse(xhr.responseText);
-        if (xhr.readyState == 4 && xhr.status == "201") {
-            console.log(result, url);
-        } else {
-            console.error(result);
+        if (content !== undefined && parent !== undefined) {
+            url += "?content=" + content + "&parent=" + parent;
+        } else if (content !== undefined) {
+            url += "?content=" + content;
+        } else if (content === undefined) {
+            console.log("Please, enter the message!");
         }
-    }
-    xhr.send(null);
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", url, true);
+        xhr.setRequestHeader('Content-type','application/json; charset=utf-8');
+        xhr.onload = function () {
+            var result = JSON.parse(xhr.responseText);
+            if (xhr.readyState == 4 && xhr.status == "201") {
+                resolve(this.response);
+            } else {
+                var error = new Error(this.statusText);
+                error.code = this.status;
+                reject(error);
+            }
+        }
+
+        xhr.onerror = function() {
+            reject(new Error("Network Error"));
+        };
+
+        xhr.send(null);
+    });
 }
-//newComment("text ", 4141);
 
 function editComment(id, content) {
     var url = "http://frontend-test.pingbull.com/pages/" + EMAIL + "/comments/" + id;
@@ -99,7 +127,6 @@ function editComment(id, content) {
     }
     xhr.send(null);   
 }
-// editComment(4150, "12345");
 
 function deleteComment(id) {
     var url = "http://frontend-test.pingbull.com/pages/" + EMAIL + "/comments/" + id;
@@ -107,9 +134,6 @@ function deleteComment(id) {
     xhr.open("DELETE", url, true);
     xhr.send(null); 
 }
-
-// deleteComment(4148);
-
 
 /* Rendering */
 $(".comment_leave").find("img").attr("src", currentUser.avatar);
@@ -206,7 +230,7 @@ function toggleCommentForm(event) {
     var form = target.parents(".comment__body").find(".comment__form");
     var textarea = target.parents(".comment__body").find("textarea");
 
-    if(!form.hasClass("comment__form_opened")) {
+    if (!form.hasClass("comment__form_opened")) {
         form.addClass("comment__form_opened");
     } else {
         form.removeClass("comment__form_opened");
@@ -227,11 +251,14 @@ function sendComment(event, parentID, mode) {
             textarea.val("");
             break;
         case 'comment':
-            newComment(message);
-            setTimeout(() => {
-                showNewComment(event);
-                textarea.val("");
-            }, 500);
+            newComment(message)
+                .then(
+                    response => {
+                        showNewComment(event);
+                        textarea.val("");
+                    },
+                    error => console.log(error)
+                )
             break;
     }
     isEditModeEnabled = false;
@@ -247,11 +274,12 @@ function deleteCurrentComment(event, id) {
 
 function loadMoreComments(event) {
     var numberOfCommentsToShow = 5;
-    if(isFirefox()) {
-        numberOfCommentsToShow = 0;
-    }
     var target = $(event.target);
-    getCommentsList(numberOfCommentsToShow, commentsCount);
+
+    getCommentsList(numberOfCommentsToShow, commentsCount).then(
+        result => renderCommentList(result),
+        error => console.log(error)
+    );
 
     var url  = "http://frontend-test.pingbull.com/pages/" + EMAIL + "/comments?count=99999";
     var xhr  = new XMLHttpRequest()
@@ -285,7 +313,7 @@ function isEditMode(event) {
 }
 
 function formButtonAction(event, id, mode) {
-    if(!isEditModeEnabled) {
+    if (!isEditModeEnabled) {
         sendComment(event, id, mode);
     } else {
         editCurrentComment(event, id);
@@ -337,13 +365,8 @@ function showNewComment(event) {
     var textarea = target.parent("form").find("textarea");
     var message = textarea.val();
 
-    var url  = "http://frontend-test.pingbull.com/pages/" + EMAIL + "/comments?count=1";
-    var xhr  = new XMLHttpRequest()
-    xhr.open('GET', url, true)
-    xhr.onload = function () {
-        var result = JSON.parse(xhr.responseText);
-        if (xhr.readyState == 4 && xhr.status == "200") {
-            console.log(result);
+    getCommentsList(1).then(
+        result => {
             html = `
                 <div class="comment">
                     <div class="avatar">
@@ -392,27 +415,18 @@ function showNewComment(event) {
             `;
         
             $("#comment-list").prepend(html);
-        } else {
-            console.error(result);
-        }
-    }
-    xhr.send(null);
+        },
+        error => console.log(error)
+    );
 }
 
 function setCommentsNumber() {
-    var url  = "http://frontend-test.pingbull.com/pages/" + EMAIL + "/comments?count=99999";
-    var xhr  = new XMLHttpRequest()
-    xhr.open('GET', url, true)
-    xhr.onload = function () {
-        var result = JSON.parse(xhr.responseText);
-        if (xhr.readyState == 4 && xhr.status == "200") {
-            $(".comments-number").text(result.length);
-        } else {
-            console.error(result);
-        }
-    }
-    xhr.send(null);
+    getCommentsList(99999).then(
+        result => $(".comments-number").text(result.length),
+        error => console.log(error)
+    );
 }
+
 setCommentsNumber();
 
 //helpers
@@ -439,14 +453,6 @@ function getCurrentTime() {
     var now = new Date(Date.now());
     var formatted = now.getHours() - hours + ":" + (now.getMinutes() + minutes);
     return formatted;
-}
-
-function isFirefox() {
-    if (navigator.userAgent.search(/Firefox/) > 0) {
-        return true;
-    };
-
-    return false;
 }
 
 // Polyfill
