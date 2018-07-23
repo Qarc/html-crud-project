@@ -7,36 +7,19 @@ var currentUser = {
 }
 
 function getCommentsList(count, offset) {
-    return new Promise(function(resolve, reject) {
-        var url  = "http://frontend-test.pingbull.com/pages/" + EMAIL + "/comments";
+    var url  = "http://frontend-test.pingbull.com/pages/" + EMAIL + "/comments";
 
-        if (count !== undefined && offset !== undefined) {
-            url += "?count=" + count + "&offset=" + offset;
-        } else if (count !== undefined) {
-            url += "?count=" + count;
-        } else if (offset !== undefined) {
-            url += "?offset=" + offset;
-        }
+    if (count !== undefined && offset !== undefined) {
+        url += "?count=" + count + "&offset=" + offset;
+    } else if (count !== undefined) {
+        url += "?count=" + count;
+    } else if (offset !== undefined) {
+        url += "?offset=" + offset;
+    }
 
-        var xhr  = new XMLHttpRequest()
-        xhr.open('GET', url, true)
-        xhr.onload = function () {
-            var result = JSON.parse(xhr.responseText);
-            if (xhr.readyState == 4 && xhr.status == "200") {
-                resolve(result);
-            } else {
-                var error = new Error(this.statusText);
-                error.code = this.status;
-                reject(error);
-            }
-        }
-
-        xhr.onerror = function() {
-            reject(new Error("Network Error"));
-        };
-        
-        xhr.send(null);
-    });
+    return fetch(url).then(function(response) {
+        return response.json();
+    })
 }
 
 getCommentsList().then(
@@ -72,37 +55,19 @@ function getSingleComment(id) {
 //getSingleComment(4141)
 
 function newComment(content, parent) {
-    return new Promise(function(resolve, reject) {
-        var url = "http://frontend-test.pingbull.com/pages/" + EMAIL + "/comments";
+    var url = "http://frontend-test.pingbull.com/pages/" + EMAIL + "/comments";
 
-        if (content !== undefined && parent !== undefined) {
-            url += "?content=" + content + "&parent=" + parent;
-        } else if (content !== undefined) {
-            url += "?content=" + content;
-        } else if (content === undefined) {
-            console.log("Please, enter the message!");
-        }
+    if (content !== undefined && parent !== undefined) {
+        url += "?content=" + content + "&parent=" + parent;
+    } else if (content !== undefined) {
+        url += "?content=" + content;
+    } else if (content === undefined) {
+        console.log("Please, enter the message!");
+    }
 
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", url, true);
-        xhr.setRequestHeader('Content-type','application/json; charset=utf-8');
-        xhr.onload = function () {
-            var result = JSON.parse(xhr.responseText);
-            if (xhr.readyState == 4 && xhr.status == "201") {
-                resolve(this.response);
-            } else {
-                var error = new Error(this.statusText);
-                error.code = this.status;
-                reject(error);
-            }
-        }
-
-        xhr.onerror = function() {
-            reject(new Error("Network Error"));
-        };
-
-        xhr.send(null);
-    });
+    return fetch(url, {method: 'POST'}).then(function(response) {
+        return response.json();
+    })
 }
 
 function editComment(id, content) {
@@ -114,25 +79,14 @@ function editComment(id, content) {
         return;
     }
 
-    var xhr = new XMLHttpRequest();
-    xhr.open("PUT", url, true);
-    xhr.setRequestHeader('Content-type','application/json; charset=utf-8');
-    xhr.onload = function () {
-        var result = JSON.parse(xhr.responseText);
-        if (xhr.readyState == 4 && xhr.status == "200") {
-            console.log(result);
-        } else {
-            console.error(result);
-        }
-    }
-    xhr.send(null);   
+    return fetch(url, {method: 'PUT'}).then(function(response) {
+        return response.json();
+    })
 }
 
 function deleteComment(id) {
     var url = "http://frontend-test.pingbull.com/pages/" + EMAIL + "/comments/" + id;
-    var xhr = new XMLHttpRequest();
-    xhr.open("DELETE", url, true);
-    xhr.send(null); 
+    fetch(url, {method: 'DELETE'});
 }
 
 /* Rendering */
